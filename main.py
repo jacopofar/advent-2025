@@ -8,7 +8,9 @@ from wasmtime import Config, Engine, Linker, Module, Store, WasiConfig, ExitTrap
 BUILD_DETAIL_NAME = ".howtobuild.json"
 
 
-def run_solution(wasm_path: Path, input_data: str) -> tuple[str, str]:
+def run_solution(
+    wasm_path: Path, input_data: str, print_log: bool = True
+) -> tuple[str, str]:
     sol1: str = ""
     sol2: str = ""
 
@@ -19,7 +21,8 @@ def run_solution(wasm_path: Path, input_data: str) -> tuple[str, str]:
             sol1 = line.split(" ")[-1]
         if line.startswith("SOLUTION PART 2: "):
             sol2 = line.split(" ")[-1]
-        print(line)
+        if print_log:
+            print(line)
 
     engine_cfg = Config()
     # I don't care about fuel, but this is how to do it:
@@ -58,10 +61,13 @@ def run_solution(wasm_path: Path, input_data: str) -> tuple[str, str]:
 
 
 def main():
-    wasm_path = build_solution(Path("day01_go"))
-    with open("inputs/day01.txt") as fr:
-        s1, s2 = run_solution(wasm_path, fr.read())
-        print(s1, s2)
+    for folder in Path(".").glob("day*"):
+        print(f"Found {folder}")
+        day = folder.name.split("_")[0]
+        wasm_path = build_solution(folder)
+        with open(f"inputs/{day}.txt") as fr:
+            s1, s2 = run_solution(wasm_path, fr.read(), print_log=False)
+            print(f"solutions from {folder} {s1, s2}")
 
 
 def build_solution(path: Path) -> Path:
