@@ -22,7 +22,7 @@ def run_solution(wasm_path: Path, input_data: str) -> tuple[str, str]:
         print(line)
 
     engine_cfg = Config()
-    # I don't care about fuel, but this is how to do it:s
+    # I don't care about fuel, but this is how to do it:
     # engine_cfg.consume_fuel = True
     # engine_cfg.cache = True
 
@@ -58,7 +58,7 @@ def run_solution(wasm_path: Path, input_data: str) -> tuple[str, str]:
 
 
 def main():
-    wasm_path = build_solution(Path("day01_zig"))
+    wasm_path = build_solution(Path("day01_go"))
     with open("inputs/day01.txt") as fr:
         s1, s2 = run_solution(wasm_path, fr.read())
         print(s1, s2)
@@ -74,6 +74,14 @@ def build_solution(path: Path) -> Path:
             main_file = specs.get("main", "main.zig")
             retcode = system(
                 f"cd {path.absolute()} && zig build-exe {main_file} -target wasm32-wasi -fno-entry -rdynamic -femit-bin={main_file}.wasm"
+            )
+            if retcode != 0:
+                raise OSError(f"Build failed with code {retcode}")
+            return path / f"{main_file}.wasm"
+        elif specs["language"] == "golang":
+            main_file = specs.get("main", "main.go")
+            retcode = system(
+                f"cd {path.absolute()} && GOOS=wasip1 GOARCH=wasm go build -o {main_file}.wasm {main_file}"
             )
             if retcode != 0:
                 raise OSError(f"Build failed with code {retcode}")
