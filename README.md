@@ -10,4 +10,4 @@ AoC 2025 using WASM+WASI. Solutions are built and executed using Wasmtime.
 
     uv run main.py
 
-may change in the future for added serendpity
+it has a few options to filter logging and test, use `--help`. It may change in the future for added serendpity
