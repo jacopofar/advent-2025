@@ -18,7 +18,7 @@ def run_solution(
 
     def print_out(data: bytes):
         nonlocal sol1, sol2
-        line = data.decode(errors="replace")
+        line = data.decode(errors="replace").strip()
         if line.startswith("SOLUTION PART 1: "):
             sol1 = line.split(" ")[-1]
         if line.startswith("SOLUTION PART 2: "):
@@ -83,6 +83,8 @@ def build_solution(path: Path) -> Path:
         specs = json.load(sr)
         if specs["language"] == "zig":
             main_file = specs.get("main", "main.zig")
+            # TODO target wasm32-wasip2 abuilds but then wasmime complains it is a component not a module
+            # shuld be possible, needs investigation
             retcode = system(
                 f"cd {path.absolute()} && zig build-exe {main_file} -target wasm32-wasi -fno-entry -rdynamic -femit-bin={main_file}.wasm"
             )
@@ -93,6 +95,15 @@ def build_solution(path: Path) -> Path:
             main_file = specs.get("main", "main.go")
             retcode = system(
                 f"cd {path.absolute()} && GOOS=wasip1 GOARCH=wasm go build -o {main_file}.wasm {main_file}"
+            )
+            if retcode != 0:
+                raise OSError(f"Build failed with code {retcode}")
+            return path / f"{main_file}.wasm"
+        elif specs["language"] == "rust":
+            main_file = specs.get("main", "main.rs")
+            # TODO rust builds to wasm32-wasip2 but then wasmtime complains
+            retcode = system(
+                f"cd {path.absolute()} && rustc {main_file} --target wasm32-wasip1 -o {main_file}.wasm "
             )
             if retcode != 0:
                 raise OSError(f"Build failed with code {retcode}")
