@@ -1,7 +1,9 @@
+import argparse
 import json
 from pathlib import Path
 from os import system
 from tempfile import NamedTemporaryFile
+from sys import argv
 
 from wasmtime import Config, Engine, Linker, Module, Store, WasiConfig, ExitTrap, Func
 
@@ -60,13 +62,16 @@ def run_solution(
         return (sol1, sol2)
 
 
-def main():
+def main(test: bool = False, print_log: bool = False, days: set[int] | None = None):
     for folder in Path(".").glob("day*"):
         print(f"Found {folder}")
         day = folder.name.split("_")[0]
+        if days is not None and int(day[-2:]) not in days:
+            print("skipping, not in the day list")
+            continue
         wasm_path = build_solution(folder)
-        with open(f"inputs/{day}.txt") as fr:
-            s1, s2 = run_solution(wasm_path, fr.read(), print_log=False)
+        with open(f"inputs/{day}{'.test' if test else ''}.txt") as fr:
+            s1, s2 = run_solution(wasm_path, fr.read(), print_log=print_log)
             print(f"solutions from {folder} {s1, s2}")
 
 
@@ -97,4 +102,22 @@ def build_solution(path: Path) -> Path:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--test", help="fetch test data instead of real one", action="store_true"
+    )
+    parser.add_argument(
+        "--print_log",
+        help="print all the logs, not just the solution",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--days", help="Days to do, comma separated, if missing do all of them"
+    )
+    args = parser.parse_args()
+    days = set()
+    if args.days:
+        days = set([int(d) for d in args.days.split(",")])
+    if len(days) == 0:
+        days = None
+    main(test=args.test, print_log=args.print_log, days=days)
