@@ -10,7 +10,7 @@ from wasmtime import Config, Engine, Linker, Module, Store, WasiConfig, ExitTrap
 BUILD_DETAIL_NAME = ".howtobuild.json"
 
 
-def run_solution(
+def run_wasi_solution(
     wasm_path: Path, input_data: str, print_log: bool = True
 ) -> tuple[str, str]:
     sol1: str = ""
@@ -71,7 +71,7 @@ def main(test: bool = False, print_log: bool = False, days: set[int] | None = No
             continue
         wasm_path = build_solution(folder)
         with open(f"inputs/{day}{'.test' if test else ''}.txt") as fr:
-            s1, s2 = run_solution(wasm_path, fr.read(), print_log=print_log)
+            s1, s2 = run_wasi_solution(wasm_path, fr.read(), print_log=print_log)
             print(f"solutions from {folder} {s1, s2}")
 
 
