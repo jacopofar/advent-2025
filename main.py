@@ -70,7 +70,7 @@ def main(test: bool = False, print_log: bool = False, days: set[int] | None = No
             print("skipping, not in the day list")
             continue
         wasm_path = build_solution(folder)
-        with open(f"inputs/{day}{'.test' if test else ''}.txt") as fr:
+        with open(f"inputs{'_samples' if test else ''}/{day}.txt") as fr:
             s1, s2 = run_wasi_solution(wasm_path, fr.read(), print_log=print_log)
             print(f"solutions from {folder} {s1, s2}")
 

@@ -4,6 +4,9 @@ AoC 2025 using WASM+WASI. Solutions are built and executed using Wasmtime.
 
 * Day 01: done in Zig and Golang
 * Day 02: done in Golang and Rust
+* Day 03: done in Golang
+* Day 04: done in Rust
+
 
 
 ## Usage
