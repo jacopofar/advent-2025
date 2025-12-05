@@ -1,6 +1,8 @@
 use std::io;
 use std::cmp::{min, max};
 
+// collapses two ranges and returns the ranges with them collapsed
+// if nothing to collapse, the original value
 fn collapse_ranges(ranges: Vec<(u64, u64)>) -> Vec<(u64, u64)> {
     let mut new_ranges = ranges.clone();
     for ia in 0..ranges.len(){
@@ -54,6 +56,13 @@ fn main() {
             }
         }
     }
+    /*
+    Simple implementation that finds any two ranges that overlaps and collapses
+    them, until nothing is to be collapsed.
+
+    It is O(n^2), sorting the ranges we could iterate and collapse in order,
+    but who cares, this works as is ;)
+    */
     println!("before: {:?}", ranges);
     let mut current_best = ranges.len();
     let mut new_ranges = collapse_ranges(ranges);
